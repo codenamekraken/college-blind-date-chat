@@ -5,110 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blind Date Chat</title>
     <style>
-        body { background:#0f172a; font-family:Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; color:white; }
-        .chat-box { background:#1e293b; width:360px; padding:20px; border-radius:12px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .messages { height:300px; background:#020617; border:1px solid #1e293b; margin:15px 0; padding:10px; overflow-y:auto; border-radius:8px; display:none; }
-        .msg { margin-bottom:12px; padding:10px; background:#334155; border-radius:8px; font-size: 14px; border-left: 4px solid #f43f5e; }
-        .msg b { color:#f43f5e; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        input { width:100%; padding:12px; background:#0f172a; border:1px solid #334155; color:white; border-radius:8px; box-sizing:border-box; margin-bottom:10px; }
-        button { width:100%; padding:12px; background:#f43f5e; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
-        button:disabled { opacity:0.5; cursor:not-allowed; }
+        :root { --primary: #f43f5e; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
+        body { background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text); }
+        .app-container { background: var(--card); width: 100%; max-width: 450px; height: 90vh; display: flex; flex-direction: column; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; margin: 10px; border: 1px solid #334155; }
+        .header { background: #111827; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { margin: 0; font-size: 1.1rem; color: var(--primary); }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; background: #020617; }
+        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 16px; font-size: 14px; max-width: 80%; line-height: 1.5; background: #334155; position: relative; }
+        .msg b { display: block; font-size: 10px; text-transform: uppercase; margin-bottom: 4px; color: var(--primary); letter-spacing: 0.5px; }
+        .join-btn { position: absolute; top: 10px; right: 10px; font-size: 10px; background: var(--primary); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+        .input-area { padding: 16px; background: #111827; display: flex; gap: 10px; border-top: 1px solid #334155; }
+        input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
+        button { padding: 12px 20px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; }
+        #login-screen { padding: 40px; text-align: center; margin-top: auto; margin-bottom: auto; }
+        .report-btn { font-size: 10px; color: #94a3b8; cursor: pointer; margin-top: 5px; display: inline-block; }
     </style>
 </head>
 <body>
 
-<div class="chat-box">
-    <h3 style="text-align:center; color:#f43f5e; margin-top:0;">💬 Blind Date Chat</h3>
-
-    <div id="login-area">
-        <input id="matchId" placeholder="Enter Match ID (BD-XXXXXX)">
-        <button id="loginBtn" onclick="verify()">Enter Chat</button>
+<div class="app-container">
+    <div class="header">
+        <h2 id="title">💬 Blind Date Chat</h2>
+        <span id="role-badge" style="font-size: 10px; opacity: 0.6;"></span>
     </div>
 
-    <div id="chat" class="messages"></div>
+    <div id="login-screen">
+        <h1 style="font-size: 1.5rem; margin-bottom: 10px;">Welcome</h1>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Enter your Match ID to join your private chat.</p>
+        <input id="mid" placeholder="BD-XXXXXX">
+        <button onclick="start()" style="width: 100%; margin-top: 12px;">Join Chat</button>
+    </div>
 
-    <div id="input-area" style="display:none">
-        <input id="msg" placeholder="Type a message...">
-        <button id="sendBtn" onclick="sendMsg()">Send</button>
+    <div id="chat-screen" style="display:none; flex-direction:column; flex:1;">
+        <div id="admin-info" style="display:none; padding: 8px; background: #f43f5e1a; font-size: 11px; text-align: center; border-bottom: 1px solid #f43f5e33;">
+            Viewing: <span id="current-room">All Rooms</span>
+        </div>
+        <div id="msgs" class="messages"></div>
+        <div class="input-area">
+            <input id="txt" placeholder="Write something...">
+            <button onclick="send()">Send</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // 1. REPLACE THIS URL WITH YOUR NEW DEPLOYMENT URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbw-CcZpp3azUKKjtGjuVTFB9h7DrrCckzoowuqjSiA2Zd-W973U6QnDK-p7LRsOYuyC/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxW00LO7AT6gD_skGSR1ExitSiPB7Rzm5U1WuuGTzYXA-i7XAyE_hkG9pIowx5stbM8/exec";
+    const ADMIN_PASS = "adityasingh710";
     
-    let matchId = "";
-    let myGender = "User";
+    let mid = "";
+    let gender = "";
+    let isAdmin = false;
 
-    function verify() {
-        matchId = document.getElementById("matchId").value.trim();
-        const btn = document.getElementById("loginBtn");
-        if (!matchId) return alert("Please enter your Match ID");
+    function start() {
+        mid = document.getElementById("mid").value.trim();
+        if(!mid) return;
 
-        btn.disabled = true;
-        btn.innerText = "Connecting...";
+        if(mid === ADMIN_PASS) {
+            isAdmin = true; gender = "ADMIN";
+            showChat("🛠️ Admin Dashboard");
+            setInterval(loadAdmin, 3000); loadAdmin();
+            return;
+        }
 
-        fetch(`${API_URL}?matchId=${matchId}`)
-            .then(r => r.text())
-            .then(res => {
-                if (res !== "INVALID") {
-                    myGender = res; // Captured gender from sheet (Male/Female)
-                    document.getElementById("login-area").style.display = "none";
-                    document.getElementById("chat").style.display = "block";
-                    document.getElementById("input-area").style.display = "block";
-
-                    loadMessages();
-                    setInterval(loadMessages, 3000); // Check for new messages every 3 seconds
-                } else {
-                    alert("Match ID not found. Please try again.");
-                    btn.disabled = false;
-                    btn.innerText = "Enter Chat";
-                }
-            })
-            .catch(() => alert("Server error. Check your Deployment settings."));
-    }
-
-    function sendMsg() {
-        const msgBox = document.getElementById("msg");
-        const msg = msgBox.value.trim();
-        if (!msg) return;
-
-        // Use 'no-cors' to bypass browser security blocks
-        fetch(API_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({
-                matchId: matchId,
-                sender: myGender,
-                message: msg
-            })
-        }).then(() => {
-            msgBox.value = "";
-            loadMessages(); // Refresh UI immediately
+        fetch(`${API_URL}?matchId=${mid}`).then(r => r.text()).then(res => {
+            if(res !== "INVALID") {
+                gender = res;
+                showChat(`Chatting as ${res}`);
+                setInterval(loadChat, 3000); loadChat();
+            } else { alert("ID not found."); }
         });
     }
 
-    function loadMessages() {
-        fetch(`${API_URL}?matchId=${matchId}&mode=fetch`)
-            .then(r => r.json())
-            .then(data => {
-                const chat = document.getElementById("chat");
-                chat.innerHTML = data.map(m => `
-                    <div class="msg">
-                        <b>${m.sender}</b>
-                        ${m.message}
-                    </div>
-                `).join("");
-                chat.scrollTop = chat.scrollHeight;
-            });
+    function showChat(title) {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("chat-screen").style.display = "flex";
+        document.getElementById("title").innerText = title;
+        if(isAdmin) document.getElementById("admin-info").style.display = "block";
     }
 
-    // Support for Enter key
-    document.getElementById("msg").addEventListener("keypress", (e) => {
-        if(e.key === "Enter") sendMsg();
-    });
-</script>
+    function send(isReport = false, reportMsg = "") {
+        const input = document.getElementById("txt");
+        const msg = isReport ? reportMsg : input.value.trim();
+        if(!msg) return;
 
+        fetch(API_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ matchId: mid, sender: gender, message: msg, isReport: isReport })
+        }).then(() => { 
+            if(!isReport) input.value = ""; 
+            isAdmin ? loadAdmin() : loadChat();
+        });
+    }
+
+    function report() {
+        const reason = prompt("Why are you reporting this user?");
+        if(reason) send(true, "USER REPORTED: " + reason);
+    }
+
+    function join(id) { mid = id; document.getElementById("current-room").innerText = id; }
+
+    function loadChat() {
+        fetch(`${API_URL}?matchId=${mid}&mode=fetch`).then(r => r.json()).then(data => {
+            const box = document.getElementById("msgs");
+            box.innerHTML = data.map(m => `
+                <div class="msg">
+                    <b>${m.sender}</b>${m.message}
+                    ${m.sender !== gender ? '<br><span class="report-btn" onclick="report()">Report</span>' : ''}
+                </div>
+            `).join("");
+            box.scrollTop = box.scrollHeight;
+        });
+    }
+
+    function loadAdmin() {
+        fetch(`${API_URL}?mode=adminFetch`).then(r => r.json()).then(data => {
+            const box = document.getElementById("msgs");
+            box.innerHTML = data.map(m => `
+                <div class="msg">
+                    <span class="join-btn" onclick="join('${m.room}')">Join ${m.room}</span>
+                    <b>Room: ${m.room} | ${m.sender}</b>${m.message}
+                </div>
+            `).join("");
+            box.scrollTop = box.scrollHeight;
+        });
+    }
+</script>
 </body>
 </html>
