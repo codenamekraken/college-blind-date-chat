@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>College Blind Date – Chat</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-box {
+      background: #020617;
+      width: 360px;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #f43f5e;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 8px;
+    }
+
+    button {
+      background: #f43f5e;
+      color: white;
+      cursor: pointer;
+    }
+
+    .error {
+      color: #f87171;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .messages {
+      background: #020617;
+      border: 1px solid #1e293b;
+      height: 220px;
+      border-radius: 6px;
+      padding: 8px;
+      overflow-y: auto;
+      font-size: 14px;
+      display: none;
+    }
+
+    .msg {
+      margin-bottom: 6px;
+    }
+
+    .input-area {
+      display: none;
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .input-area input {
+      flex: 1;
+    }
+
+    .note {
+      font-size: 11px;
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="chat-box">
+  <h2>💬 Blind Date Chat</h2>
+
+  <input id="matchId" placeholder="Enter MatchID (BD-123456)">
+  <button onclick="verifyMatch()">Enter Chat</button>
+
+  <div id="error" class="error"></div>
+
+  <div id="chat" class="messages">
+    <div class="msg">System: Anonymous chat started.</div>
+  </div>
+
+  <div id="inputArea" class="input-area">
+    <input id="msgInput" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <div class="note">
+    No names • No photos • Be respectful ❤️
+  </div>
+</div>
+
+<script>
+  // 🔴 PASTE YOUR GOOGLE WEB APP URL HERE
+  const API_URL = "https://script.google.com/macros/s/AKfycbxrOZAtc0a_ont2T-EShETVAupRGCU3JEiWDWBUQOkuxKOGvYg0Yt0fEByfaZhWgkA4/exec";
+
+  function verifyMatch() {
+    const matchId = document.getElementById("matchId").value.trim();
+    const error = document.getElementById("error");
+    const chat = document.getElementById("chat");
+    const inputArea = document.getElementById("inputArea");
+
+    error.textContent = "";
+    chat.style.display = "none";
+    inputArea.style.display = "none";
+
+    if (!matchId) {
+      error.textContent = "Please enter MatchID";
+      return;
+    }
+
+    fetch(`${API_URL}?matchId=${matchId}`)
+      .then(r => r.text())
+      .then(res => {
+        if (res === "VALID") {
+          chat.style.display = "block";
+          inputArea.style.display = "flex";
+        } else {
+          error.textContent = "Invalid MatchID";
+        }
+      })
+      .catch(() => error.textContent = "Server error");
+  }
+
+  function sendMessage() {
+    const message = document.getElementById("msgInput").value.trim();
+    const matchId = document.getElementById("matchId").value.trim();
+    const chat = document.getElementById("chat");
+
+    if (!message) return;
+
+    fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        matchId: matchId,
+        sender: "Anonymous",
+        message: message
+      })
+    })
+    .then(r => r.text())
+    .then(res => {
+      if (res === "SENT") {
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.textContent = "You: " + message;
+        chat.appendChild(div);
+        document.getElementById("msgInput").value = "";
+        chat.scrollTop = chat.scrollHeight;
+      } else {
+        alert("Message failed");
+      }
+    })
+    .catch(() => alert("Server error"));
+  }
+</script>
+
+</body>
+</html>
