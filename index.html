@@ -5,20 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blind Date Chat</title>
     <style>
-        :root { --primary: #f43f5e; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
-        body { background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text); }
-        .app-container { background: var(--card); width: 100%; max-width: 450px; height: 90vh; display: flex; flex-direction: column; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; margin: 10px; border: 1px solid #334155; }
-        .header { background: #111827; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-        .header h2 { margin: 0; font-size: 1.1rem; color: var(--primary); }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; background: #020617; }
-        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 16px; font-size: 14px; max-width: 80%; line-height: 1.5; background: #334155; position: relative; }
-        .msg b { display: block; font-size: 10px; text-transform: uppercase; margin-bottom: 4px; color: var(--primary); letter-spacing: 0.5px; }
-        .join-btn { position: absolute; top: 10px; right: 10px; font-size: 10px; background: var(--primary); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
-        .input-area { padding: 16px; background: #111827; display: flex; gap: 10px; border-top: 1px solid #334155; }
-        input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
-        button { padding: 12px 20px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; }
-        #login-screen { padding: 40px; text-align: center; margin-top: auto; margin-bottom: auto; }
-        .report-btn { font-size: 10px; color: #94a3b8; cursor: pointer; margin-top: 5px; display: inline-block; }
+        /* Color Palette from Screenshots */
+        :root { 
+            --primary: #f43f5e; 
+            --bg-dark: #0f172a; 
+            --card-bg: #1e293b; 
+            --input-bg: #020617;
+            --text-main: #f1f5f9; 
+            --text-dim: #94a3b8;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            color: var(--text-main); 
+        }
+
+        /* Responsive Container matching image_409e8a.png */
+        .app-container { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 450px; 
+            height: 90vh; 
+            display: flex; 
+            flex-direction: column; 
+            border-radius: 28px; 
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.7); 
+            overflow: hidden; 
+            margin: 10px; 
+            border: 1px solid #334155; 
+        }
+
+        /* Header matching image_402367.png */
+        .header { 
+            background: transparent; 
+            padding: 25px 20px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            text-align: center;
+        }
+
+        .header h2 { 
+            margin: 0; 
+            font-size: 1.3rem; 
+            color: var(--primary); 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Login Screen matching image_409e8a.png */
+        #login-screen { 
+            padding: 60px 40px; 
+            text-align: center; 
+            margin-top: auto; 
+            margin-bottom: auto; 
+        }
+
+        #login-screen h1 { 
+            font-size: 2rem; 
+            font-weight: 800;
+            margin-bottom: 15px; 
+            color: #ffffff;
+        }
+
+        #login-screen p { 
+            color: var(--text-dim); 
+            font-size: 1rem; 
+            margin-bottom: 35px; 
+            line-height: 1.5;
+        }
+
+        /* Chat Screen Styles */
+        #chat-screen { 
+            display: none; 
+            flex-direction: column; 
+            flex: 1; 
+        }
+
+        .messages { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            background: var(--input-bg); 
+            margin: 15px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg { 
+            padding: 12px 18px; 
+            border-radius: 18px; 
+            font-size: 0.95rem; 
+            max-width: 85%; 
+            line-height: 1.5; 
+            background: #334155; 
+            position: relative; 
+            align-self: flex-start;
+        }
+
+        .msg.me {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+        }
+
+        .msg b { 
+            display: block; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            margin-bottom: 6px; 
+            opacity: 0.8;
+            letter-spacing: 0.8px; 
+        }
+
+        /* Admin UI */
+        .join-btn { 
+            font-size: 10px; 
+            background: rgba(255,255,255,0.2); 
+            padding: 5px 10px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        /* Input Area matching image_402367.png */
+        .input-area { 
+            padding: 20px; 
+            background: transparent; 
+            display: flex; 
+            flex-direction: column;
+            gap: 15px; 
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 16px 20px; 
+            border-radius: 12px; 
+            border: 1px solid #334155; 
+            background: #020617; 
+            color: white; 
+            outline: none; 
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        button { 
+            width: 100%;
+            padding: 16px; 
+            background: var(--primary); 
+            border: none; 
+            border-radius: 12px; 
+            color: white; 
+            font-weight: 800; 
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        button:active { transform: scale(0.98); background: #e11d48; }
+
+        #admin-info { 
+            padding: 10px; 
+            background: rgba(244, 63, 94, 0.1); 
+            font-size: 12px; 
+            text-align: center; 
+            border-bottom: 1px solid rgba(244, 63, 94, 0.2); 
+        }
+
+        .report-btn { font-size: 10px; color: var(--text-dim); cursor: pointer; margin-top: 8px; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -26,30 +197,29 @@
 <div class="app-container">
     <div class="header">
         <h2 id="title">💬 Blind Date Chat</h2>
-        <span id="role-badge" style="font-size: 10px; opacity: 0.6;"></span>
     </div>
 
     <div id="login-screen">
-        <h1 style="font-size: 1.5rem; margin-bottom: 10px;">Welcome</h1>
-        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Enter your Match ID to join your private chat.</p>
-        <input id="mid" placeholder="BD-XXXXXX">
-        <button onclick="start()" style="width: 100%; margin-top: 12px;">Join Chat</button>
+        <h1>Welcome</h1>
+        <p>Enter your Match ID to join your private chat.</p>
+        <input id="mid" placeholder="BD-XXXXXX" maxlength="9">
+        <button onclick="start()">Join Chat</button>
     </div>
 
-    <div id="chat-screen" style="display:none; flex-direction:column; flex:1;">
-        <div id="admin-info" style="display:none; padding: 8px; background: #f43f5e1a; font-size: 11px; text-align: center; border-bottom: 1px solid #f43f5e33;">
-            Viewing: <span id="current-room">All Rooms</span>
+    <div id="chat-screen">
+        <div id="admin-info" style="display:none;">
+            Viewing: <span id="current-room" style="font-weight: bold;">All Rooms</span>
         </div>
         <div id="msgs" class="messages"></div>
         <div class="input-area">
-            <input id="txt" placeholder="Write something...">
+            <input id="txt" placeholder="Type a message...">
             <button onclick="send()">Send</button>
         </div>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxW00LO7AT6gD_skGSR1ExitSiPB7Rzm5U1WuuGTzYXA-i7XAyE_hkG9pIowx5stbM8/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxVOq0RjUc8rLr2Kf3UoHQ0WYxUNr0l1B_k4N06e6sSeO0S10wQCWkGVlvJo4NIhZb9/exec";
     const ADMIN_PASS = "adityasingh710";
     
     let mid = "";
@@ -57,10 +227,10 @@
     let isAdmin = false;
 
     function start() {
-        mid = document.getElementById("mid").value.trim();
+        mid = document.getElementById("mid").value.trim().toUpperCase();
         if(!mid) return;
 
-        if(mid === ADMIN_PASS) {
+        if(mid === ADMIN_PASS.toUpperCase()) {
             isAdmin = true; gender = "ADMIN";
             showChat("🛠️ Admin Dashboard");
             setInterval(loadAdmin, 3000); loadAdmin();
@@ -109,9 +279,10 @@
         fetch(`${API_URL}?matchId=${mid}&mode=fetch`).then(r => r.json()).then(data => {
             const box = document.getElementById("msgs");
             box.innerHTML = data.map(m => `
-                <div class="msg">
-                    <b>${m.sender}</b>${m.message}
-                    ${m.sender !== gender ? '<br><span class="report-btn" onclick="report()">Report</span>' : ''}
+                <div class="msg ${m.sender === gender ? 'me' : ''}">
+                    <b>${m.sender}</b>
+                    <span>${m.message}</span>
+                    ${m.sender !== gender ? `<br><span class="report-btn" onclick="report()">Report Issue</span>` : ''}
                 </div>
             `).join("");
             box.scrollTop = box.scrollHeight;
@@ -123,13 +294,26 @@
             const box = document.getElementById("msgs");
             box.innerHTML = data.map(m => `
                 <div class="msg">
-                    <span class="join-btn" onclick="join('${m.room}')">Join ${m.room}</span>
-                    <b>Room: ${m.room} | ${m.sender}</b>${m.message}
+                    <span class="join-btn" onclick="join('${m.room}')">Join Room: ${m.room}</span>
+                    <b>${m.sender}</b>
+                    <span>${m.message}</span>
                 </div>
             `).join("");
             box.scrollTop = box.scrollHeight;
         });
     }
+
+    // Support for Enter Key
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const login = document.getElementById("login-screen");
+            if (login.style.display !== "none") {
+                start();
+            } else {
+                send();
+            }
+        }
+    });
 </script>
 </body>
 </html>
