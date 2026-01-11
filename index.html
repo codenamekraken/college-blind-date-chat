@@ -5,154 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blind Date Chat</title>
     <style>
-        body {
-            background: #0f172a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
-        }
-        .chat-box {
-            background: #1e293b;
-            width: 360px;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        h3 { margin-top: 0; color: #f43f5e; text-align: center; }
-        .messages {
-            height: 300px;
-            background: #020617;
-            border: 1px solid #334155;
-            margin: 15px 0;
-            padding: 10px;
-            overflow-y: auto;
-            border-radius: 8px;
-            display: none;
-        }
-        .msg {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: #334155;
-            border-radius: 6px;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-        .msg b { color: #fb7185; }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: white;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #f43f5e;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { background: #e11d48; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        body { background:#0f172a; font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; color:white; }
+        .chat-box { background:#1e293b; width:360px; padding:20px; border-radius:12px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .messages { height:280px; background:#020617; border:1px solid #1e293b; margin:15px 0; padding:10px; overflow-y:auto; border-radius:8px; display:none; }
+        .msg { margin-bottom:10px; padding:8px; background:#334155; border-radius:6px; font-size: 14px; }
+        .msg b { color:#f43f5e; font-size: 11px; text-transform: uppercase; display: block; }
+        input { width:100%; padding:12px; background:#0f172a; border:1px solid #334155; color:white; border-radius:8px; box-sizing:border-box; margin-bottom:10px; }
+        button { width:100%; padding:12px; background:#f43f5e; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+        button:disabled { opacity:0.5; cursor:not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="chat-box">
-    <h3>💬 Blind Date Chat</h3>
+    <h3 style="text-align:center; color:#f43f5e">💬 Blind Date Chat</h3>
 
-    <div id="login-section">
-        <input id="matchId" placeholder="Enter Match ID (e.g., BD-975852)">
-        <button id="entryBtn" onclick="verify()">Enter Chat</button>
+    <div id="login-area">
+        <input id="matchId" placeholder="Enter Match ID (BD-XXXXXX)">
+        <button id="loginBtn" onclick="verify()">Enter Chat</button>
     </div>
 
     <div id="chat" class="messages"></div>
 
-    <div id="input-section" style="display:none;">
+    <div id="input-area" style="display:none">
         <input id="msg" placeholder="Type a message...">
         <button id="sendBtn" onclick="sendMsg()">Send</button>
     </div>
 </div>
 
 <script>
-    // REPLACE THIS WITH YOUR DEPLOYED WEB APP URL
+    // PASTE YOUR NEW WEB APP URL HERE
     const API_URL = "https://script.google.com/macros/s/AKfycbxrOZAtc0a_ont2T-EShETVAupRGCU3JEiWDWBUQOkuxKOGvYg0Yt0fEByfaZhWgkA4/exec";
     
     let matchId = "";
-    let poller = null;
+    let myGender = "User"; // Default fallback
 
     function verify() {
-        const input = document.getElementById("matchId");
-        const btn = document.getElementById("entryBtn");
-        matchId = input.value.trim();
-        
-        if (!matchId) return alert("Please enter a MatchID");
+        matchId = document.getElementById("matchId").value.trim();
+        const btn = document.getElementById("loginBtn");
+        if (!matchId) return alert("Enter MatchID");
 
         btn.disabled = true;
-        btn.innerText = "Verifying...";
+        btn.innerText = "Connecting...";
 
         fetch(`${API_URL}?matchId=${matchId}`)
             .then(r => r.text())
             .then(res => {
-                if (res === "VALID") {
-                    document.getElementById("login-section").style.display = "none";
+                if (res !== "INVALID") {
+                    myGender = res; // Set gender to "Male" or "Female" from spreadsheet
+                    document.getElementById("login-area").style.display = "none";
                     document.getElementById("chat").style.display = "block";
-                    document.getElementById("input-section").style.display = "block";
-                    
+                    document.getElementById("input-area").style.display = "block";
+
                     loadMessages();
-                    poller = setInterval(loadMessages, 3000); // Poll every 3 seconds
+                    setInterval(loadMessages, 3000);
                 } else {
-                    alert("Invalid MatchID. Please check and try again.");
+                    alert("Invalid MatchID");
                     btn.disabled = false;
                     btn.innerText = "Enter Chat";
                 }
             })
-            .catch(err => {
-                console.error(err);
-                alert("Server error. Make sure your script is deployed as 'Anyone'.");
-                btn.disabled = false;
-                btn.innerText = "Enter Chat";
-            });
+            .catch(() => alert("Server error - check Deployment settings"));
     }
 
     function sendMsg() {
         const msgBox = document.getElementById("msg");
-        const sendBtn = document.getElementById("sendBtn");
         const msg = msgBox.value.trim();
-        
         if (!msg) return;
 
-        sendBtn.disabled = true;
-
-        // Use text/plain and no-cors to bypass complex CORS preflights
+        // Use 'no-cors' to avoid browser blocks, sending the captured gender as sender
         fetch(API_URL, {
             method: "POST",
-            mode: "no-cors", 
+            mode: "no-cors",
             headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({
                 matchId: matchId,
-                sender: "User",
+                sender: myGender,
                 message: msg
             })
-        }).then(() => {
-            msgBox.value = "";
-            sendBtn.disabled = false;
-            loadMessages(); // Refresh UI immediately
-        }).catch(err => {
-            console.error("Send Error:", err);
-            sendBtn.disabled = false;
         });
+
+        msgBox.value = "";
     }
 
     function loadMessages() {
@@ -164,17 +97,16 @@
                 data.forEach(m => {
                     const div = document.createElement("div");
                     div.className = "msg";
-                    div.innerHTML = `<b>${m.sender}:</b> ${m.message}`;
+                    div.innerHTML = `<b>${m.sender}</b>${m.message}`;
                     chat.appendChild(div);
                 });
                 chat.scrollTop = chat.scrollHeight;
-            })
-            .catch(err => console.error("Fetch Error:", err));
+            });
     }
 
-    // Allow "Enter" key to send message
-    document.getElementById("msg").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") sendMsg();
+    // Enter key support
+    document.getElementById("msg").addEventListener("keypress", (e) => {
+        if(e.key === "Enter") sendMsg();
     });
 </script>
 
