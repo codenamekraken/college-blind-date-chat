@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>College Blind Date Chat</title>
+<title>Blind Date Chat</title>
 
 <style>
 body {
@@ -12,6 +12,7 @@ body {
   justify-content:center;
   align-items:center;
   height:100vh;
+  margin:0;
 }
 .chat-box {
   background:#020617;
@@ -31,8 +32,9 @@ body {
 input,button {
   width:100%;
   padding:10px;
-  border:none;
   margin-bottom:6px;
+  border:none;
+  border-radius:6px;
 }
 button {
   background:#f43f5e;
@@ -53,17 +55,17 @@ button {
 
   <div id="chat" class="messages"></div>
 
-  <input id="msg" placeholder="Type message">
+  <input id="msg" placeholder="Message">
   <button onclick="sendMsg()">Send</button>
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxrOZAtc0a_ont2T-EShETVAupRGCU3JEiWDWBUQOkuxKOGvYg0Yt0fEByfaZhWgkA4/exec";
 let matchId = "";
-let lastCount = 0;
 
 function enterChat() {
   matchId = document.getElementById("matchId").value.trim();
+
   fetch(`${API}?matchId=${matchId}`)
     .then(r => r.text())
     .then(res => {
@@ -83,7 +85,7 @@ function sendMsg() {
   fetch(API, {
     method: "POST",
     body: JSON.stringify({
-      matchId: matchId,
+      matchId,
       sender: "Anonymous",
       message: msg
     })
@@ -96,9 +98,6 @@ function loadMessages() {
   fetch(`${API}?matchId=${matchId}&mode=fetch`)
     .then(r => r.json())
     .then(data => {
-      if (data.length === lastCount) return;
-      lastCount = data.length;
-
       const chat = document.getElementById("chat");
       chat.innerHTML = "";
       data.forEach(m => {
