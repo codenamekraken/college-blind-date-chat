@@ -3,100 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Blind Date Chat</title>
+    <title>Blind Date | Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #f43f5e; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
+        :root { 
+            --rose: #f43f5e; 
+            --male: #0ea5e9;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
         
+        /* LIVE WALLPAPER ANIMATION */
         body { 
-            background: var(--bg); 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            margin: 0; display: flex; justify-content: center; align-items: center; 
-            height: 100vh; overflow: hidden; color: var(--text); 
+            margin: 0; padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #581c87, #020617);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
         }
 
-        .app-container { 
-            background: var(--card); 
-            width: 100%; max-width: 450px; 
-            height: 100dvh; /* Mobile height fix */
-            display: flex; flex-direction: column; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            border: 1px solid #334155; 
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .header { background: #111827; padding: 15px; border-bottom: 1px solid #334155; flex-shrink: 0; }
-        .header h2 { margin: 0; font-size: 1.1rem; color: var(--primary); text-align: center; }
-
-        #login-screen { padding: 40px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        
-        .gender-selection { display: flex; gap: 10px; margin: 20px 0; }
-        .gender-btn { 
-            flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #334155;
-            background: rgba(255,255,255,0.05); cursor: pointer; color: #94a3b8; font-weight: bold;
-        }
-        .gender-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        #chat-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-
-        .messages { flex: 1; padding: 15px; overflow-y: auto; background: #020617; display: flex; flex-direction: column; gap: 10px; }
-        
-        .msg { padding: 10px 14px; border-radius: 14px; font-size: 14px; max-width: 80%; background: #334155; position: relative; line-height: 1.4; }
-        .msg.me { align-self: flex-end; background: var(--primary); }
-        .msg b { display: block; font-size: 10px; text-transform: uppercase; margin-bottom: 4px; opacity: 0.7; }
-
-        .input-area { padding: 12px; background: #111827; display: flex; gap: 8px; border-top: 1px solid #334155; flex-shrink: 0; }
-        
-        input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; font-size: 16px; }
-        button { padding: 10px 18px; background: var(--primary); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-
-        .join-badge { position: absolute; top: -8px; right: 0; background: #475569; font-size: 9px; padding: 2px 6px; border-radius: 8px; cursor: pointer; }
-        .report-btn { font-size: 10px; color: #94a3b8; text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block; }
-        
-        #admin-info { 
-            background: rgba(244, 63, 94, 0.1); padding: 8px; font-size: 11px; 
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(244, 63, 94, 0.2); 
+        .app-card { 
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%; max-width: 440px; height: 92vh;
+            display: flex; flex-direction: column;
+            border-radius: 30px; border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            margin: 10px;
         }
 
-        .clear-btn { background: #941120; font-size: 10px; padding: 4px 8px; }
+        .header { padding: 20px; text-align: center; border-bottom: 1px solid var(--glass-border); }
+        .header h2 { margin: 0; font-size: 1.3rem; font-weight: 900; background: linear-gradient(to right, #f43f5e, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Login screen with better gender buttons */
+        #login-screen { padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: center; }
+        .welcome-title { font-size: 2.2rem; font-weight: 900; margin-bottom: 10px; color: white; }
+        .welcome-sub { color: #94a3b8; font-size: 0.9rem; margin-bottom: 35px; }
+
+        .gender-grid { display: flex; gap: 15px; margin-bottom: 25px; }
+        .gender-option { 
+            flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border);
+            background: var(--glass); cursor: pointer; transition: 0.3s; font-weight: 700; color: #94a3b8;
+        }
+        .gender-option.active { 
+            background: var(--rose); border-color: var(--rose); color: white;
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.5); 
+        }
+
+        input { 
+            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.4); color: white; outline: none; margin-bottom: 20px;
+            box-sizing: border-box; font-size: 1rem;
+        }
+
+        .btn-join { 
+            width: 100%; padding: 18px; border-radius: 15px; border: none;
+            background: linear-gradient(45deg, #f43f5e, #e11d48);
+            color: white; font-weight: 800; font-size: 1rem; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3);
+        }
+
+        /* Chat Layout */
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 14px 18px; border-radius: 20px; font-size: 14px; max-width: 80%; line-height: 1.5; color: white; }
+        .msg.female-bubble { align-self: flex-start; background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.3); border-bottom-left-radius: 4px; }
+        .msg.male-bubble { align-self: flex-start; background: rgba(14, 165, 233, 0.2); border: 1px solid rgba(14, 165, 233, 0.3); border-bottom-left-radius: 4px; }
+        .msg.me { align-self: flex-end; background: var(--rose); border-bottom-right-radius: 4px; }
+        
+        .msg b { display: block; font-size: 10px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+
+        .input-area { padding: 20px; background: rgba(15, 23, 42, 0.8); display: flex; gap: 10px; border-top: 1px solid var(--glass-border); }
+        .input-area input { margin-bottom: 0; border-radius: 30px; }
+        .send-btn { background: var(--rose); border: none; border-radius: 50%; width: 55px; height: 55px; color: white; cursor: pointer; flex-shrink: 0; }
+
+        /* Admin UI */
+        #admin-info { padding: 10px 20px; background: rgba(244, 63, 94, 0.1); border-bottom: 1px solid rgba(244, 63, 94, 0.2); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+        .admin-btns { display: flex; gap: 8px; }
+        .admin-btn { padding: 5px 10px; border-radius: 5px; border: none; font-size: 10px; cursor: pointer; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-card">
     <div class="header">
-        <h2 id="title-text">💬 Blind Date Chat</h2>
+        <h2 id="top-title">💖 BLIND DATE CHAT</h2>
     </div>
 
     <div id="login-screen">
-        <h1 style="font-size: 1.8rem; margin: 0 0 10px 0;">Welcome</h1>
-        <p style="color: #94a3b8; margin-bottom: 20px;">Choose gender and enter Match ID.</p>
+        <div class="welcome-title">Welcome</div>
+        <p class="welcome-sub">Choose your vibe and start matching.</p>
         
-        <div class="gender-selection">
-            <div class="gender-btn" id="btn-Male" onclick="setG('Male')">Male</div>
-            <div class="gender-btn" id="btn-Female" onclick="setG('Female')">Female</div>
+        <div class="gender-grid">
+            <div class="gender-option" id="btn-Male" onclick="setG('Male')">Male</div>
+            <div class="gender-option" id="btn-Female" onclick="setG('Female')">Female</div>
         </div>
 
-        <input id="mid" placeholder="BD-XXXXXX">
-        <button onclick="startApp()" style="margin-top: 15px; width: 100%;">Join Chat</button>
+        <input id="mid" placeholder="Match ID (e.g. BD-123456)">
+        <button class="btn-join" onclick="startApp()">START CHATTING</button>
     </div>
 
-    <div id="chat-screen">
+    <div id="chat-screen" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
         <div id="admin-info" style="display:none;">
             <span>Room: <b id="current-room">All</b></span>
-            <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+            <div class="admin-btns">
+                <button class="admin-btn" style="background:#be123c" onclick="wipeAll()">WIPE ALL</button>
+                <button class="admin-btn" style="background:#334155" onclick="clearRoom()">Clear Room</button>
+            </div>
         </div>
         <div id="msg-container" class="messages"></div>
         <div class="input-area">
-            <input id="txt-msg" placeholder="Type a message...">
-            <button onclick="sendMsg()">Send</button>
+            <input id="txt-msg" placeholder="Write a message...">
+            <button class="send-btn" onclick="sendMsg()">➤</button>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. UPDATE THIS WITH YOUR NEW WEB APP URL
-    const API_URL = "https://script.google.com/macros/s/AKfycby-3VCI-DBdUVTeC9tQJfGivtUwagUr8xM7fow0MJJ_0EqxkVExb9xVYSPNDJQWAEgR/exec"; 
-    const ADMIN_KEY = "adityasingh710";
+    const API_URL = "https://script.google.com/macros/s/AKfycbydjuXALuq-tMYxizI9wjSDgG-ap1RDMxttNkU4G8xL2UNzaM3FZRmr5DakA9n2I6Ix/exec"; // PASTE NEW URL HERE
+    const ADMIN_KEY = "adityasingh710"; //
     
     let mid = "";
     let gender = "";
@@ -104,26 +137,24 @@
 
     function setG(g) {
         gender = g;
-        document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.gender-option').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + g).classList.add('active');
     }
 
     function startApp() {
         mid = document.getElementById("mid").value.trim().toUpperCase();
-        if(!mid) return alert("Enter ID!");
-
+        if(!mid) return;
         if(mid === ADMIN_KEY.toUpperCase()) {
             isAdmin = true; gender = "ADMIN";
             setupUI("🛠️ Admin Dashboard");
             setInterval(loadAdmin, 3000); loadAdmin();
             return;
         }
-
-        if(!gender) return alert("Select Gender!");
+        if(!gender) return alert("Select Male or Female!");
 
         fetch(`${API_URL}?matchId=${mid}`).then(r => r.text()).then(res => {
             if(res === "VALID") {
-                setupUI(`Chatting as ${gender}`);
+                setupUI("Private Chat");
                 setInterval(loadChat, 3000); loadChat();
             } else { alert("ID not found!"); }
         });
@@ -132,43 +163,29 @@
     function setupUI(title) {
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("chat-screen").style.display = "flex";
-        document.getElementById("title-text").innerText = title;
+        document.getElementById("top-title").innerText = title;
         if(isAdmin) document.getElementById("admin-info").style.display = "flex";
     }
 
-    function sendMsg(isReport = false, reportMsg = "") {
+    function sendMsg() {
         const input = document.getElementById("txt-msg");
-        const val = isReport ? reportMsg : input.value.trim();
+        const val = input.value.trim();
         if(!val) return;
-
         fetch(API_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ matchId: mid, sender: gender, message: val, isReport: isReport })
-        }).then(() => {
-            if(!isReport) input.value = "";
-            isAdmin ? loadAdmin() : loadChat();
-        });
+            method: "POST", mode: "no-cors",
+            body: JSON.stringify({ matchId: mid, sender: gender, message: val })
+        }).then(() => { input.value = ""; isAdmin ? loadAdmin() : loadChat(); });
     }
 
-    // NEW: Function to clear room messages
-    function clearChat() {
-        if(!isAdmin || mid === "ADMIN") return alert("Join a specific room first!");
-        if(!confirm(`Delete all messages in Room ${mid}?`)) return;
-
-        fetch(API_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ action: "clearRoom", matchId: mid })
-        }).then(() => {
-            alert("Messages Cleared!");
-            loadAdmin();
-        });
+    function clearRoom() {
+        if(!isAdmin || mid === "ADMIN") return alert("Join a room first!");
+        if(confirm(`Clear room ${mid}?`)) 
+            fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "clearRoom", matchId: mid }) }).then(loadAdmin);
     }
 
-    function report() {
-        const reason = prompt("Report issue:");
-        if(reason) sendMsg(true, "REPORTED: " + reason);
+    function wipeAll() {
+        if(confirm("DELETE EVERYTHING IN SPREADSHEET?")) 
+            fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "wipeAll" }) }).then(loadAdmin);
     }
 
     function join(id) { mid = id; document.getElementById("current-room").innerText = id; }
@@ -177,9 +194,8 @@
         fetch(`${API_URL}?matchId=${mid}&mode=fetch`).then(r => r.json()).then(data => {
             const box = document.getElementById("msg-container");
             box.innerHTML = data.map(m => `
-                <div class="msg ${m.sender === gender ? 'me' : ''}">
-                    <b>${m.sender}</b>${m.message}
-                    ${m.sender !== gender ? `<br><span class="report-btn" onclick="report()">Report</span>` : ''}
+                <div class="msg ${m.sender === gender ? 'me' : (m.sender === 'Female' ? 'female-bubble' : 'male-bubble')}">
+                    <b style="color:${m.sender === 'Female' ? '#f43f5e' : '#0ea5e9'}">${m.sender}</b>${m.message}
                 </div>
             `).join("");
             box.scrollTop = box.scrollHeight;
@@ -190,16 +206,16 @@
         fetch(`${API_URL}?mode=adminFetch`).then(r => r.json()).then(data => {
             const box = document.getElementById("msg-container");
             box.innerHTML = data.map(m => `
-                <div class="msg">
-                    <span class="join-badge" onclick="join('${m.room}')">Join ${m.room}</span>
-                    <b>Room: ${m.room} | ${m.sender}</b>${m.message}
+                <div class="msg" style="align-self:stretch; background: rgba(255,255,255,0.05); max-width: 100%;">
+                    <span style="float:right; cursor:pointer; color:#f43f5e" onclick="join('${m.room}')">[JOIN ${m.room}]</span>
+                    <b style="color:${m.sender === 'Female' ? '#f43f5e' : '#0ea5e9'}">${m.room} | ${m.sender}</b>${m.message}
                 </div>
             `).join("");
             if(!box.dataset.scrolled) { box.scrollTop = box.scrollHeight; box.dataset.scrolled = "true"; }
         });
     }
-
     document.getElementById("txt-msg").addEventListener("keypress", (e) => { if(e.key === "Enter") sendMsg(); });
 </script>
+
 </body>
 </html>
