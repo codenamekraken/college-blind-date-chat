@@ -2,200 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blind Date | Premium Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Blind Date Chat</title>
     <style>
-        :root { 
-            --primary: #f43f5e; 
-            --bg: #0f172a; 
-            --card: #1e293b; 
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
+        :root { --primary: #f43f5e; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
+        
         body { 
-            background: radial-gradient(circle at top right, #1e293b, var(--bg)); 
+            background: var(--bg); 
             font-family: 'Segoe UI', system-ui, sans-serif; 
             margin: 0; display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; color: #fff;
+            height: 100vh; overflow: hidden; color: var(--text); 
         }
 
         .app-container { 
             background: var(--card); 
-            width: 100%; max-width: 420px; height: 90vh; 
+            width: 100%; max-width: 450px; 
+            height: 100dvh; /* Dynamic viewport height for mobile */
             display: flex; flex-direction: column; 
-            border-radius: 28px; border: 1px solid var(--border);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            margin: 10px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            border: 1px solid #334155; 
         }
 
-        .header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
-        .header h2 { margin: 0; font-size: 1.2rem; color: var(--primary); font-weight: 700; }
+        .header { background: #111827; padding: 15px; border-bottom: 1px solid #334155; flex-shrink: 0; }
+        .header h2 { margin: 0; font-size: 1.1rem; color: var(--primary); text-align: center; }
 
-        /* Login Screen */
-        #login-screen { padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: center; }
-        .welcome-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
-        .welcome-sub { color: #94a3b8; font-size: 0.95rem; margin-bottom: 30px; }
-
-        /* Gender Toggle */
-        .gender-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        .gender-btn { 
-            flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--border);
-            background: var(--glass); cursor: pointer; transition: 0.3s; font-weight: 600; color: #94a3b8;
-        }
-        .gender-btn.active { 
-            background: var(--primary); border-color: var(--primary); color: #fff;
-            box-shadow: 0 0 15px rgba(244, 63, 94, 0.4); 
-        }
-
-        input { 
-            width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border);
-            background: #020617; color: white; outline: none; margin-bottom: 15px;
-            box-sizing: border-box; font-size: 1rem;
-        }
-        input:focus { border-color: var(--primary); }
-
-        .main-btn { 
-            width: 100%; padding: 16px; border-radius: 12px; border: none;
-            background: var(--primary); color: white; font-weight: 700; font-size: 1rem;
-            cursor: pointer; transition: 0.2s;
-        }
-        .main-btn:active { transform: scale(0.98); }
-
-        /* Chat UI */
-        .messages { flex: 1; padding: 20px; overflow-y: auto; background: #020617; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; max-width: 80%; background: #334155; position: relative; }
-        .msg.me { align-self: flex-end; background: var(--primary); }
-        .msg b { display: block; font-size: 0.7rem; opacity: 0.7; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        #login-screen { padding: 40px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         
-        .admin-tag { position: absolute; top: -10px; right: 0; background: #475569; font-size: 9px; padding: 2px 8px; border-radius: 10px; cursor: pointer; }
-        .admin-tag:hover { background: #fff; color: #000; }
+        .gender-selection { display: flex; gap: 10px; margin: 20px 0; }
+        .gender-btn { 
+            flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #334155;
+            background: rgba(255,255,255,0.05); cursor: pointer; color: #94a3b8; font-weight: bold;
+        }
+        .gender-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .input-area { padding: 15px; background: rgba(0,0,0,0.3); display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--border); }
-        .input-area input { margin-bottom: 0; }
-        .send-btn { background: var(--primary); border: none; border-radius: 10px; padding: 12px 20px; color: white; font-weight: bold; cursor: pointer; }
+        #chat-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
 
-        .report-link { font-size: 10px; color: #94a3b8; text-decoration: underline; cursor: pointer; margin-top: 5px; display: block; }
+        .messages { flex: 1; padding: 15px; overflow-y: auto; background: #020617; display: flex; flex-direction: column; gap: 10px; }
+        
+        .msg { padding: 10px 14px; border-radius: 14px; font-size: 14px; max-width: 80%; background: #334155; position: relative; line-height: 1.4; }
+        .msg.me { align-self: flex-end; background: var(--primary); }
+        .msg b { display: block; font-size: 10px; text-transform: uppercase; margin-bottom: 4px; opacity: 0.7; }
+
+        .input-area { padding: 12px; background: #111827; display: flex; gap: 8px; border-top: 1px solid #334155; flex-shrink: 0; }
+        
+        input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; font-size: 16px; }
+        button { padding: 10px 18px; background: var(--primary); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+
+        .join-badge { position: absolute; top: -8px; right: 0; background: #475569; font-size: 9px; padding: 2px 6px; border-radius: 8px; cursor: pointer; }
+        .report-btn { font-size: 10px; color: #94a3b8; text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block; }
+        
+        #admin-info { background: rgba(244, 63, 94, 0.1); padding: 6px; font-size: 11px; text-align: center; border-bottom: 1px solid rgba(244, 63, 94, 0.2); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <h2 id="top-title">💬 Blind Date Chat</h2>
+        <h2 id="title-text">💬 Blind Date Chat</h2>
     </div>
 
     <div id="login-screen">
-        <div class="welcome-title">Welcome</div>
-        <div class="welcome-sub">Choose your gender and enter Match ID.</div>
-
-        <div class="gender-box">
-            <div class="gender-btn" id="btn-Male" onclick="selectGender('Male')">Male</div>
-            <div class="gender-btn" id="btn-Female" onclick="selectGender('Female')">Female</div>
+        <h1 style="font-size: 1.8rem; margin: 0 0 10px 0;">Welcome</h1>
+        <p style="color: #94a3b8; margin-bottom: 20px;">Choose gender and enter Match ID.</p>
+        
+        <div class="gender-selection">
+            <div class="gender-btn" id="btn-Male" onclick="setG('Male')">Male</div>
+            <div class="gender-btn" id="btn-Female" onclick="setG('Female')">Female</div>
         </div>
 
-        <input id="mid-input" placeholder="Enter Match ID (BD-XXXXXX)">
-        <button class="main-btn" onclick="startSession()">Join Chat</button>
+        <input id="mid" placeholder="BD-XXXXXX">
+        <button onclick="startApp()" style="margin-top: 15px; width: 100%;">Join Chat</button>
     </div>
 
-    <div id="chat-screen" style="display:none; flex-direction:column; flex:1;">
-        <div id="admin-banner" style="display:none; padding:8px; background:rgba(255,255,255,0.1); font-size:11px; text-align:center;">
-            Viewing Room: <span id="viewing-id" style="color:var(--primary)">All</span>
+    <div id="chat-screen">
+        <div id="admin-info" style="display:none;">
+            Viewing Room: <span id="current-room" style="color:var(--primary); font-weight:bold;">All</span>
         </div>
-        <div id="msg-box" class="messages"></div>
+        <div id="msg-container" class="messages"></div>
         <div class="input-area">
-            <input id="msg-input" placeholder="Type something...">
-            <button class="send-btn" onclick="postMessage()">Send</button>
+            <input id="txt-msg" placeholder="Type a message...">
+            <button onclick="sendMsg()">Send</button>
         </div>
     </div>
 </div>
 
 <script>
-    // REPLACE WITH YOUR GOOGLE WEB APP URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbwj17p9Ldg47L8EjvLu2GFxOqK9MT3e-GgbBybn3PKNPUUOqWWN8OZBIGFtLHoT0cgY/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzElD3mf4tC6bBLLFEyrR6xyaJOCJWvv9MujcpVZke1m0qzYCFbrca_jDwzI79M_C7z/exec"; 
     const ADMIN_KEY = "adityasingh710";
     
-    let activeID = "";
-    let myRole = ""; // Stores Male/Female/Admin
+    let mid = "";
+    let gender = "";
     let isAdmin = false;
 
-    function selectGender(g) {
-        myRole = g;
+    function setG(g) {
+        gender = g;
         document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + g).classList.add('active');
     }
 
-    function startSession() {
-        activeID = document.getElementById("mid-input").value.trim();
-        if(!activeID) return alert("Enter ID!");
+    function startApp() {
+        mid = document.getElementById("mid").value.trim().toUpperCase();
+        if(!mid) return alert("Enter ID!");
 
-        // 1. Check Admin Password
-        if(activeID === ADMIN_KEY) {
-            isAdmin = true; myRole = "ADMIN";
-            enterChat("🛠️ Admin Panel");
-            setInterval(fetchAdminLive, 3000); fetchAdminLive();
+        if(mid === ADMIN_KEY.toUpperCase()) {
+            isAdmin = true; gender = "ADMIN";
+            setupUI("🛠️ Admin Dashboard");
+            setInterval(loadAdmin, 3000); loadAdmin();
             return;
         }
 
-        // 2. Regular User Flow
-        if(!myRole) return alert("Select Male or Female!");
+        if(!gender) return alert("Select Gender!");
 
-        fetch(`${API_URL}?matchId=${activeID}`).then(r => r.text()).then(res => {
+        fetch(`${API_URL}?matchId=${mid}`).then(r => r.text()).then(res => {
             if(res === "VALID") {
-                enterChat(`Chatting as ${myRole}`);
-                setInterval(fetchUserChat, 3000); fetchUserChat();
-            } else { alert("Match ID not found!"); }
+                setupUI(`Chatting as ${gender}`);
+                setInterval(loadChat, 3000); loadChat();
+            } else { alert("ID not found!"); }
         });
     }
 
-    function enterChat(title) {
+    function setupUI(title) {
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("chat-screen").style.display = "flex";
-        document.getElementById("top-title").innerText = title;
-        if(isAdmin) document.getElementById("admin-banner").style.display = "block";
+        document.getElementById("title-text").innerText = title;
+        if(isAdmin) document.getElementById("admin-info").style.display = "block";
     }
 
-    function postMessage(isReport = false, reportText = "") {
-        const input = document.getElementById("msg-input");
-        const text = isReport ? reportText : input.value.trim();
-        if(!text) return;
+    function sendMsg(isReport = false, reportMsg = "") {
+        const input = document.getElementById("txt-msg");
+        const val = isReport ? reportMsg : input.value.trim();
+        if(!val) return;
 
         fetch(API_URL, {
             method: "POST",
             mode: "no-cors",
-            body: JSON.stringify({ matchId: activeID, sender: myRole, message: text, isReport: isReport })
+            body: JSON.stringify({ matchId: mid, sender: gender, message: val, isReport: isReport })
         }).then(() => {
             if(!isReport) input.value = "";
-            isAdmin ? fetchAdminLive() : fetchUserChat();
+            isAdmin ? loadAdmin() : loadChat();
         });
     }
 
-    function reportIssue() {
-        const reason = prompt("Report this user for:");
-        if(reason) postMessage(true, "USER REPORTED: " + reason);
+    function report() {
+        const reason = prompt("Report issue:");
+        if(reason) sendMsg(true, "REPORTED: " + reason);
     }
 
-    function adminJoin(id) { activeID = id; document.getElementById("viewing-id").innerText = id; }
+    function join(id) { mid = id; document.getElementById("current-room").innerText = id; }
 
-    function fetchUserChat() {
-        fetch(`${API_URL}?matchId=${activeID}&mode=fetch`).then(r => r.json()).then(data => {
-            const box = document.getElementById("msg-box");
+    function loadChat() {
+        fetch(`${API_URL}?matchId=${mid}&mode=fetch`).then(r => r.json()).then(data => {
+            const box = document.getElementById("msg-container");
             box.innerHTML = data.map(m => `
-                <div class="msg ${m.sender === myRole ? 'me' : ''}">
+                <div class="msg ${m.sender === gender ? 'me' : ''}">
                     <b>${m.sender}</b>${m.message}
-                    ${m.sender !== myRole ? `<span class="report-link" onclick="reportIssue()">Report Issue</span>` : ''}
+                    ${m.sender !== gender ? `<br><span class="report-btn" onclick="report()">Report</span>` : ''}
                 </div>
             `).join("");
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function fetchAdminLive() {
+    function loadAdmin() {
         fetch(`${API_URL}?mode=adminFetch`).then(r => r.json()).then(data => {
-            const box = document.getElementById("msg-box");
+            const box = document.getElementById("msg-container");
             box.innerHTML = data.map(m => `
                 <div class="msg">
-                    <span class="admin-tag" onclick="adminJoin('${m.room}')">JOIN ${m.room}</span>
+                    <span class="join-badge" onclick="join('${m.room}')">Join ${m.room}</span>
                     <b>Room: ${m.room} | ${m.sender}</b>${m.message}
                 </div>
             `).join("");
@@ -203,8 +176,7 @@
         });
     }
 
-    document.getElementById("msg-input").addEventListener("keypress", (e) => { if(e.key === "Enter") postMessage(); });
+    document.getElementById("txt-msg").addEventListener("keypress", (e) => { if(e.key === "Enter") sendMsg(); });
 </script>
-
 </body>
 </html>
