@@ -9,6 +9,7 @@
         :root { --rose: #f43f5e; --border: rgba(255, 255, 255, 0.15); --glass: rgba(10, 10, 20, 0.85); }
         body { margin: 0; font-family: 'Poppins', sans-serif; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #020617; }
         
+        /* Animated Background */
         body::before { content: ""; position: absolute; width: 250%; height: 250%; background: conic-gradient(from 180deg at 50% 50%, #f43f5e, #881337, #1e1b4b, #020617, #f43f5e); animation: rotate 20s linear infinite; opacity: 0.45; z-index: -1; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -25,6 +26,7 @@
 
         #ice-btn { position: absolute; top: 100px; right: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 20px; font-size: 10px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px); display: none; }
 
+        /* Login Screen */
         #login-screen { padding: 40px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .g-grid { display: flex; gap: 15px; margin: 25px 0; }
         .g-opt { flex: 1; padding: 15px; border-radius: 15px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #94a3b8; font-weight: 700; cursor: pointer; transition: 0.3s; text-align: center; }
@@ -33,15 +35,21 @@
         input { width: 100%; padding: 18px; border-radius: 15px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; margin-bottom: 20px; box-sizing: border-box; font-size: 1rem; }
         .btn-main { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--rose); color: white; font-weight: 900; cursor: pointer; letter-spacing: 1px; }
 
+        /* Chat Styles */
         .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         .msg { padding: 12px 18px; border-radius: 22px; font-size: 14px; max-width: 80%; line-height: 1.5; color: white; animation: slideUp 0.3s ease; position: relative; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .msg.me { align-self: flex-end; background: var(--rose); border-bottom-right-radius: 2px; }
         .msg.them { align-self: flex-start; background: rgba(255,255,255,0.12); border-bottom-left-radius: 2px; }
+        
+        /* Admin JOIN FIX: Ensure button is always accessible */
+        .admin-msg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; width: 100%; }
+        .admin-room-label { font-size: 9px; opacity: 0.7; text-transform: uppercase; word-break: break-all; flex: 1; margin-right: 10px; }
+        .join-link { color: var(--rose); cursor: pointer; font-weight: 900; font-size: 11px; white-space: nowrap; flex-shrink: 0; padding: 2px 5px; }
+        
         .msg.challenge { align-self: center; width: 90%; background: linear-gradient(45deg, #7c3aed, #f43f5e); text-align: center; font-weight: 900; border-radius: 15px; font-size: 13px; border: 1px solid rgba(255,255,255,0.3); }
         .msg.system { align-self: center; background: rgba(255,255,255,0.05); font-size: 10px; text-transform: uppercase; color: #94a3b8; padding: 5px 12px; border-radius: 10px; }
-        .msg b { display: block; font-size: 9px; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; }
 
         .input-area { padding: 15px; background: rgba(0,0,0,0.3); display: flex; gap: 10px; border-top: 1px solid var(--border); }
         .send-btn { background: var(--rose); border: none; border-radius: 50%; width: 50px; height: 50px; color: white; cursor: pointer; font-size: 1.4rem; flex-shrink: 0; }
@@ -92,7 +100,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzHmObZTNbLZZ6ByYZFSq1-Tf1njWY4njrLXIzyX4tSl3FxrTJk1ak-iN3QHl595iXh/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzN4TP7uLP4iox7o0jRbG4vC2wBIT7PFRbQwuVd3FByRMGsqU-eSLJjrewR6BTw_PaC/exec"; 
     const ADMIN_PASS = "ADITYASINGH710";
     let mid = "", gender = "", isAdmin = false, lastData = "", timerInt = null, challengeStep = 0, viewMode = "chat";
 
@@ -110,7 +118,7 @@
 
         fetch(`${API_URL}?matchId=${mid}`).then(r => r.text()).then(vibe => {
             if (vibe !== "INVALID") {
-                document.getElementById("vibe-text").innerText = "MATCH VIBE: " + vibe + "";
+                document.getElementById("vibe-text").innerText = "MATCH VIBE: " + vibe;
                 document.getElementById("vibe-bar").style.display = "block";
                 document.getElementById("ice-btn").style.display = "block";
                 setupUI("MATCH ACTIVE");
@@ -138,7 +146,7 @@
         const t = document.getElementById("txt"), v = t.value.trim();
         if (!v) return;
         const box = document.getElementById("msg-box"), d = document.createElement("div");
-        d.className = "msg me"; d.innerHTML = `<b>${gender}</b>${v}`;
+        d.className = "msg me"; d.innerHTML = `<b>${gender}</b><br>${v}`;
         box.appendChild(d); box.scrollTop = box.scrollHeight;
         t.value = "";
         fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ matchId: mid, sender: gender, message: v }) });
@@ -151,7 +159,7 @@
             box.innerHTML = data.map(m => {
                 if(m.message.includes("TIMER_START:")) { runTimer(m.message.split(":")[1]); return ""; }
                 let cls = m.sender === "🎯 CHALLENGE" ? "msg challenge" : (m.sender === "📢 ADMIN" ? "msg challenge" : (m.sender === "SYSTEM" ? "msg system" : (m.sender === gender ? "msg me" : "msg them")));
-                return `<div class="${cls}"><b>${m.sender}</b>${m.message}</div>`;
+                return `<div class="${cls}"><b>${m.sender}</b><br>${m.message}</div>`;
             }).join("");
             box.scrollTop = box.scrollHeight;
             const progress = Math.min(data.length * 7, 100);
@@ -191,7 +199,15 @@
     function loadAdmin() {
         fetch(`${API_URL}?mode=adminFetch`).then(r => r.json()).then(data => {
             const box = document.getElementById("msg-box");
-            box.innerHTML = data.map(m => `<div class="msg them" style="max-width:100%"><span style="float:right; color:var(--rose); cursor:pointer" onclick="adminJoin('${m.room}')">[JOIN]</span><b>Room ${m.room} | ${m.sender}:</b><br>${m.message}</div>`).join("");
+            // FIXED JOIN BUTTON LAYOUT
+            box.innerHTML = data.map(m => `
+                <div class="msg them" style="max-width:95%; width: 100%;">
+                    <div class="admin-msg-header">
+                        <span class="admin-room-label">Room ${m.room} | ${m.sender}</span>
+                        <span class="join-link" onclick="adminJoin('${m.room}')">[JOIN]</span>
+                    </div>
+                    <div style="word-wrap: break-word;">${m.message}</div>
+                </div>`).join("");
             box.scrollTop = box.scrollHeight;
         });
     }
