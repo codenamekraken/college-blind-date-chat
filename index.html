@@ -3,133 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Blind Date | Premium</title>
+    <title>Blind Date | Live Status</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --rose: #f43f5e; 
-            --male: #0ea5e9;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-        }
+        :root { --rose: #f43f5e; --male: #0ea5e9; --glass: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); }
         
-        /* LIVE WALLPAPER ANIMATION */
         body { 
-            margin: 0; padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            height: 100vh; overflow: hidden;
+            margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
             display: flex; justify-content: center; align-items: center;
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #581c87, #020617);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .app-card { 
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            width: 100%; max-width: 440px; height: 92vh;
-            display: flex; flex-direction: column;
-            border-radius: 30px; border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            margin: 10px;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            width: 100%; max-width: 440px; height: 92vh; display: flex; flex-direction: column;
+            border-radius: 30px; border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.5); margin: 10px;
         }
 
-        .header { padding: 20px; text-align: center; border-bottom: 1px solid var(--glass-border); }
+        .header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); }
         .header h2 { margin: 0; font-size: 1.3rem; font-weight: 900; background: linear-gradient(to right, #f43f5e, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Login screen with better gender buttons */
         #login-screen { padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: center; }
-        .welcome-title { font-size: 2.2rem; font-weight: 900; margin-bottom: 10px; color: white; }
-        .welcome-sub { color: #94a3b8; font-size: 0.9rem; margin-bottom: 35px; }
-
         .gender-grid { display: flex; gap: 15px; margin-bottom: 25px; }
-        .gender-option { 
-            flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border);
-            background: var(--glass); cursor: pointer; transition: 0.3s; font-weight: 700; color: #94a3b8;
-        }
-        .gender-option.active { 
-            background: var(--rose); border-color: var(--rose); color: white;
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.5); 
-        }
+        .gender-option { flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--border); background: var(--glass); cursor: pointer; color: #94a3b8; font-weight: 700; transition: 0.3s; }
+        .gender-option.active { background: var(--rose); border-color: var(--rose); color: white; box-shadow: 0 0 20px rgba(244, 63, 94, 0.5); }
 
-        input { 
-            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid var(--glass-border);
-            background: rgba(0,0,0,0.4); color: white; outline: none; margin-bottom: 20px;
-            box-sizing: border-box; font-size: 1rem;
-        }
+        input { width: 100%; padding: 18px; border-radius: 15px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); color: white; outline: none; margin-bottom: 20px; box-sizing: border-box; }
+        .btn-join { width: 100%; padding: 18px; border-radius: 15px; border: none; background: linear-gradient(45deg, #f43f5e, #e11d48); color: white; font-weight: 800; cursor: pointer; }
 
-        .btn-join { 
-            width: 100%; padding: 18px; border-radius: 15px; border: none;
-            background: linear-gradient(45deg, #f43f5e, #e11d48);
-            color: white; font-weight: 800; font-size: 1rem; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3);
-        }
-
-        /* Chat Layout */
-        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 14px 18px; border-radius: 20px; font-size: 14px; max-width: 80%; line-height: 1.5; color: white; }
-        .msg.female-bubble { align-self: flex-start; background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.3); border-bottom-left-radius: 4px; }
-        .msg.male-bubble { align-self: flex-start; background: rgba(14, 165, 233, 0.2); border: 1px solid rgba(14, 165, 233, 0.3); border-bottom-left-radius: 4px; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px 16px; border-radius: 18px; font-size: 14px; max-width: 80%; line-height: 1.4; color: white; }
+        .msg.system { align-self: center; background: rgba(255, 255, 255, 0.1); font-size: 11px; text-transform: uppercase; color: #94a3b8; border-radius: 8px; border: none; }
         .msg.me { align-self: flex-end; background: var(--rose); border-bottom-right-radius: 4px; }
-        
-        .msg b { display: block; font-size: 10px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .msg.them { align-self: flex-start; background: rgba(255, 255, 255, 0.1); border-bottom-left-radius: 4px; }
 
-        .input-area { padding: 20px; background: rgba(15, 23, 42, 0.8); display: flex; gap: 10px; border-top: 1px solid var(--glass-border); }
-        .input-area input { margin-bottom: 0; border-radius: 30px; }
-        .send-btn { background: var(--rose); border: none; border-radius: 50%; width: 55px; height: 55px; color: white; cursor: pointer; flex-shrink: 0; }
-
-        /* Admin UI */
-        #admin-info { padding: 10px 20px; background: rgba(244, 63, 94, 0.1); border-bottom: 1px solid rgba(244, 63, 94, 0.2); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .admin-btns { display: flex; gap: 8px; }
-        .admin-btn { padding: 5px 10px; border-radius: 5px; border: none; font-size: 10px; cursor: pointer; color: white; font-weight: bold; }
+        .input-area { padding: 15px; background: rgba(15, 23, 42, 0.8); display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        .send-btn { background: var(--rose); border: none; border-radius: 50%; width: 50px; height: 50px; color: white; cursor: pointer; flex-shrink: 0; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
 <div class="app-card">
-    <div class="header">
-        <h2 id="top-title">💖 BLIND DATE CHAT</h2>
-    </div>
+    <div class="header"><h2>💖 BLIND DATE</h2></div>
 
     <div id="login-screen">
-        <div class="welcome-title">Welcome</div>
-        <p class="welcome-sub">Choose your vibe and start matching.</p>
-        
+        <h1 style="color:white; margin:0 0 10px 0;">Welcome</h1>
         <div class="gender-grid">
             <div class="gender-option" id="btn-Male" onclick="setG('Male')">Male</div>
             <div class="gender-option" id="btn-Female" onclick="setG('Female')">Female</div>
         </div>
-
-        <input id="mid" placeholder="Match ID (e.g. BD-123456)">
+        <input id="mid" placeholder="Enter Match ID (BD-XXXXXX)">
         <button class="btn-join" onclick="startApp()">START CHATTING</button>
     </div>
 
     <div id="chat-screen" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-        <div id="admin-info" style="display:none;">
-            <span>Room: <b id="current-room">All</b></span>
-            <div class="admin-btns">
-                <button class="admin-btn" style="background:#be123c" onclick="wipeAll()">WIPE ALL</button>
-                <button class="admin-btn" style="background:#334155" onclick="clearRoom()">Clear Room</button>
-            </div>
-        </div>
         <div id="msg-container" class="messages"></div>
         <div class="input-area">
-            <input id="txt-msg" placeholder="Write a message...">
+            <input id="txt-msg" placeholder="Type a message...">
             <button class="send-btn" onclick="sendMsg()">➤</button>
         </div>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbydjuXALuq-tMYxizI9wjSDgG-ap1RDMxttNkU4G8xL2UNzaM3FZRmr5DakA9n2I6Ix/exec"; // PASTE NEW URL HERE
-    const ADMIN_KEY = "adityasingh710"; //
+    const API_URL = "https://script.google.com/macros/s/AKfycbznpzdnJdn94PwajYXB7XZGYRCIXiOzhJqjZW0pVo37IbySgmQtbex1C8peLitH7czw/exec"; // REPLACE ME
+    const ADMIN_KEY = "adityasingh710"; 
     
     let mid = "";
     let gender = "";
@@ -144,78 +85,41 @@
     function startApp() {
         mid = document.getElementById("mid").value.trim().toUpperCase();
         if(!mid) return;
-        if(mid === ADMIN_KEY.toUpperCase()) {
-            isAdmin = true; gender = "ADMIN";
-            setupUI("🛠️ Admin Dashboard");
-            setInterval(loadAdmin, 3000); loadAdmin();
-            return;
-        }
-        if(!gender) return alert("Select Male or Female!");
+        if(mid === ADMIN_KEY.toUpperCase()) { setupAdmin(); return; }
+        if(!gender) return alert("Select Gender!");
 
         fetch(`${API_URL}?matchId=${mid}`).then(r => r.text()).then(res => {
             if(res === "VALID") {
-                setupUI("Private Chat");
+                // LOG JOIN EVENT TO SHEET
+                fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "joinSession", matchId: mid, sender: gender }) });
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("chat-screen").style.display = "flex";
                 setInterval(loadChat, 3000); loadChat();
-            } else { alert("ID not found!"); }
+            } else { alert("Match ID not found!"); }
         });
-    }
-
-    function setupUI(title) {
-        document.getElementById("login-screen").style.display = "none";
-        document.getElementById("chat-screen").style.display = "flex";
-        document.getElementById("top-title").innerText = title;
-        if(isAdmin) document.getElementById("admin-info").style.display = "flex";
     }
 
     function sendMsg() {
         const input = document.getElementById("txt-msg");
         const val = input.value.trim();
         if(!val) return;
-        fetch(API_URL, {
-            method: "POST", mode: "no-cors",
-            body: JSON.stringify({ matchId: mid, sender: gender, message: val })
-        }).then(() => { input.value = ""; isAdmin ? loadAdmin() : loadChat(); });
+        fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ matchId: mid, sender: gender, message: val }) }).then(() => { input.value = ""; loadChat(); });
     }
-
-    function clearRoom() {
-        if(!isAdmin || mid === "ADMIN") return alert("Join a room first!");
-        if(confirm(`Clear room ${mid}?`)) 
-            fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "clearRoom", matchId: mid }) }).then(loadAdmin);
-    }
-
-    function wipeAll() {
-        if(confirm("DELETE EVERYTHING IN SPREADSHEET?")) 
-            fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "wipeAll" }) }).then(loadAdmin);
-    }
-
-    function join(id) { mid = id; document.getElementById("current-room").innerText = id; }
 
     function loadChat() {
         fetch(`${API_URL}?matchId=${mid}&mode=fetch`).then(r => r.json()).then(data => {
             const box = document.getElementById("msg-container");
             box.innerHTML = data.map(m => `
-                <div class="msg ${m.sender === gender ? 'me' : (m.sender === 'Female' ? 'female-bubble' : 'male-bubble')}">
-                    <b style="color:${m.sender === 'Female' ? '#f43f5e' : '#0ea5e9'}">${m.sender}</b>${m.message}
+                <div class="msg ${m.sender === 'SYSTEM' ? 'system' : (m.sender === gender ? 'me' : 'them')}">
+                    ${m.sender !== 'SYSTEM' ? `<b style="color:${m.sender === 'Female' ? '#f43f5e' : '#0ea5e9'}; font-size:9px; display:block; margin-bottom:4px;">${m.sender}</b>` : ''}
+                    ${m.message}
                 </div>
             `).join("");
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function loadAdmin() {
-        fetch(`${API_URL}?mode=adminFetch`).then(r => r.json()).then(data => {
-            const box = document.getElementById("msg-container");
-            box.innerHTML = data.map(m => `
-                <div class="msg" style="align-self:stretch; background: rgba(255,255,255,0.05); max-width: 100%;">
-                    <span style="float:right; cursor:pointer; color:#f43f5e" onclick="join('${m.room}')">[JOIN ${m.room}]</span>
-                    <b style="color:${m.sender === 'Female' ? '#f43f5e' : '#0ea5e9'}">${m.room} | ${m.sender}</b>${m.message}
-                </div>
-            `).join("");
-            if(!box.dataset.scrolled) { box.scrollTop = box.scrollHeight; box.dataset.scrolled = "true"; }
-        });
-    }
     document.getElementById("txt-msg").addEventListener("keypress", (e) => { if(e.key === "Enter") sendMsg(); });
 </script>
-
 </body>
 </html>
