@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Blind Date Chat</title>
@@ -13,14 +13,16 @@ body {
   align-items:center;
   height:100vh;
   margin:0;
+  color:white;
 }
+
 .chat-box {
   background:#020617;
   width:360px;
   padding:16px;
   border-radius:12px;
-  color:white;
 }
+
 .messages {
   height:220px;
   border:1px solid #1e293b;
@@ -29,29 +31,33 @@ body {
   overflow-y:auto;
   display:none;
 }
+
+.msg {
+  margin-bottom:6px;
+}
+
 input,button {
   width:100%;
   padding:10px;
-  margin-bottom:6px;
   border:none;
-  border-radius:6px;
+  margin-bottom:6px;
 }
+
 button {
   background:#f43f5e;
   color:white;
-}
-.msg {
-  margin-bottom:6px;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
+
 <div class="chat-box">
   <h3>💬 Blind Date Chat</h3>
 
   <input id="matchId" placeholder="BD-123456">
-  <button onclick="enterChat()">Enter Chat</button>
+  <button onclick="verify()">Enter Chat</button>
 
   <div id="chat" class="messages"></div>
 
@@ -60,20 +66,21 @@ button {
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxrOZAtc0a_ont2T-EShETVAupRGCU3JEiWDWBUQOkuxKOGvYg0Yt0fEByfaZhWgkA4/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxrOZAtc0a_ont2T-EShETVAupRGCU3JEiWDWBUQOkuxKOGvYg0Yt0fEByfaZhWgkA4/exec";
 let matchId = "";
 
-function enterChat() {
+function verify() {
   matchId = document.getElementById("matchId").value.trim();
 
-  fetch(`${API}?matchId=${matchId}`)
+  fetch(`${API_URL}?matchId=${matchId}`)
     .then(r => r.text())
     .then(res => {
       if (res === "VALID") {
         document.getElementById("chat").style.display = "block";
+        loadMessages();
         setInterval(loadMessages, 2000);
       } else {
-        alert("Invalid Match ID");
+        alert("Invalid MatchID");
       }
     });
 }
@@ -82,10 +89,10 @@ function sendMsg() {
   const msg = document.getElementById("msg").value.trim();
   if (!msg) return;
 
-  fetch(API, {
+  fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
-      matchId,
+      matchId: matchId,
       sender: "Anonymous",
       message: msg
     })
@@ -95,20 +102,21 @@ function sendMsg() {
 }
 
 function loadMessages() {
-  fetch(`${API}?matchId=${matchId}&mode=fetch`)
+  fetch(`${API_URL}?matchId=${matchId}&mode=fetch`)
     .then(r => r.json())
     .then(data => {
       const chat = document.getElementById("chat");
       chat.innerHTML = "";
       data.forEach(m => {
-        const d = document.createElement("div");
-        d.className = "msg";
-        d.textContent = `${m.sender}: ${m.message}`;
-        chat.appendChild(d);
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.textContent = `${m.sender}: ${m.message}`;
+        chat.appendChild(div);
       });
       chat.scrollTop = chat.scrollHeight;
     });
 }
 </script>
+
 </body>
 </html>
